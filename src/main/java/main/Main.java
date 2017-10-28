@@ -35,16 +35,43 @@ public class Main {
             public void run() {
                 try {
 
-                    DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DDTHH:MM:SS");
+                    DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
                     Date fecha = new Date();
                     double temp = 25.1 + Math.random() * (34.9 - 25.1);
                     double hum = 70.1 + Math.random() * (89.9 - 70.1);
 
                     String jsonString = new JSONObject()
+
+                            .put("IdDispositivo", 1)
                             .put("fechaGeneracion", dateFormat.format(fecha))
-                            .put("idDispositivo", 1)
-                            .put("temperatura", round(temp, 2))
                             .put("humedad", round(hum, 2))
+                            .put("temperatura", round(temp, 2))
+
+                            .toString();
+                    productor.enviarMensaje(cola, jsonString);
+
+                } catch (JMSException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        Runnable helloRunnable2 = new Runnable() {
+            public void run() {
+                try {
+
+                    DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+                    Date fecha = new Date();
+                    double temp = 25.1 + Math.random() * (34.9 - 25.1);
+                    double hum = 70.1 + Math.random() * (89.9 - 70.1);
+
+                    String jsonString = new JSONObject()
+
+                            .put("IdDispositivo", 2)
+                            .put("fechaGeneracion", dateFormat.format(fecha))
+                            .put("humedad", round(hum, 2))
+                            .put("temperatura", round(temp, 2))
+
                             .toString();
                     productor.enviarMensaje(cola, jsonString);
 
@@ -55,7 +82,9 @@ public class Main {
         };
 
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+        ScheduledExecutorService executor2 = Executors.newScheduledThreadPool(1);
         executor.scheduleAtFixedRate(helloRunnable, 0, 3, TimeUnit.SECONDS);
+        executor2.scheduleAtFixedRate(helloRunnable2, 0, 2, TimeUnit.SECONDS);
 
 
 
